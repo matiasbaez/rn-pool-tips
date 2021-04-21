@@ -41,39 +41,37 @@ export default function LoginForm(props) {
 
     return (
         <View style={styles.formContainer}>
-            <form style={{ width: "100%" }}>
+            <Input
+                placeholder="Correo electronico"
+                containerStyle={styles.inputForm}
+                onChange={e => onChange(e, "email")}
+                rightIcon={
+                    <Icon 
+                        type="material-community"
+                        name="at"
+                        iconStyle={styles.iconRight} />
+                } />
 
-                <Input
-                    placeholder="Correo electronico"
-                    containerStyle={styles.inputForm}
-                    onChange={e => onChange(e, "email")}
-                    rightIcon={
-                        <Icon 
-                            type="material-community"
-                            name="at"
-                            iconStyle={styles.iconRight} />
-                    } />
+            <Input
+                placeholder="Contraseña"
+                containerStyle={styles.inputForm}
+                password={true}
+                secureTextEntry={!showPassword}
+                onChange={e => onChange(e, "password")}
+                rightIcon={
+                    <Icon 
+                        type="material-community"
+                        name={ showPassword ? "eye-off-outline" : "eye-outline" }
+                        iconStyle={styles.iconRight}
+                        onPress={() => setShowPassword(!showPassword) } />
+                } />
 
-                <Input
-                    placeholder="Contraseña"
-                    containerStyle={styles.inputForm}
-                    password={true}
-                    secureTextEntry={!showPassword}
-                    onChange={e => onChange(e, "password")}
-                    rightIcon={
-                        <Icon 
-                            type="material-community"
-                            name={ showPassword ? "eye-off-outline" : "eye-outline" }
-                            iconStyle={styles.iconRight}
-                            onPress={() => setShowPassword(!showPassword) } />
-                    } />
-
-                <Button
-                    title="Iniciar Sesión"
-                    containerStyle={styles.btnLoginContainer}
-                    buttonStyle={styles.btnLogin}
-                    onPress={onSubmit} />
-            </form>
+            <Button
+                title="Iniciar Sesión"
+                containerStyle={styles.btnLoginContainer}
+                buttonStyle={styles.btnLogin}
+                onPress={onSubmit} />
+            
 
             {/* <Loading isVisible={loading} text="Iniciando sesión..." /> */}
         </View>
