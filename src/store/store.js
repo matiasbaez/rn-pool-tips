@@ -1,6 +1,7 @@
 
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk';
+import { loadState, saveState } from '../actions/localStorage';
 
 import { authReducer } from '../reducers/authReducer'
 import { uiReducer } from '../reducers/uiReducer';
@@ -13,10 +14,16 @@ const reducers = combineReducers({
     ui: uiReducer
 })
 
+const initialData = loadState()
 
 export const store = createStore(
     reducers,
+    initialData,
     composeEnhancers(
         applyMiddleware(thunk)
     )
 )
+
+store.subscribe( function () {
+    saveState(store.getState())
+})
