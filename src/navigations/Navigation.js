@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import HomeStack from './HomeStack';
 import AccountStack from './AccountStack';
 import AuthStack from './AuthStack';
+import TipsStack from './TipsStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,6 +29,9 @@ export default function Navigation() {
 
                         <Tab.Screen name="home" component={HomeStack}
                             options={{ title: 'Estado' }} />
+
+                        <Tab.Screen name="info" component={TipsStack}
+                            options={{ title: 'Sugerencias' }} />
         
                         <Tab.Screen name="account" component={AccountStack}
                             options={{ title: 'Perfil' }} />
@@ -44,7 +48,11 @@ function screenOptions(route, color) {
     let iconName;
     switch (route.name) {
         case 'home':
-            iconName = 'compass-outline';
+            iconName = 'pool';
+            break;
+
+        case 'info':
+            iconName = 'information-outline';
             break;
 
         case 'account':
