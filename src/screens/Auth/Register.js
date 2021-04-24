@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-// import Toast from 'react-native-easy-toast';
+import Toast from 'react-native-easy-toast';
 
 import RegisterForm from '../../components/Auth/RegisterForm';
 
@@ -23,7 +23,7 @@ export default function Register() {
                 </View>
             </View>
 
-            {/* <Toast ref={toastRef} position="center" opacity={0.9} /> */}
+            <Toast ref={toastRef} position="center" opacity={0.9} />
         </KeyboardAwareScrollView>
     );
 }

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useDispatch, useSelector } from 'react-redux';
-// import Toast from 'react-native-easy-toast';
+import Toast from 'react-native-easy-toast';
 
 import Loading from '../../components/Loading';
 import UserInfo from '../../components/Account/UserInfo';
@@ -50,8 +50,8 @@ export default function UserLogged() {
                 buttonStyle={styles.btnCloseSession}
                 onPress={logout} />
 
-            {/* <Loading isVisible={loading} text={loadingText} /> */}
-            {/* <Toast ref={toastRef} position="center" opacity={0.9} /> */}
+            {loading && (<Loading isVisible={loading} text={loadingText} />) }
+            <Toast ref={toastRef} position="center" opacity={0.9} />
         </View>
     );
 }

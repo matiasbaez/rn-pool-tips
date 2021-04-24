@@ -15,9 +15,21 @@ const uiRemoveError = ({ state }) => ({
     msgError: null
 })
 
+const uiStartLoading = ({ state }) => ({
+    ...state,
+    loading: true
+})
+
+const uiFinishLoading = ({ state }) => ({
+    ...state,
+    loading: false
+})
+
 const actionDicts = {
     [types.uiSetError]: uiSetError,
-    [types.uiRemoveError]: uiRemoveError
+    [types.uiRemoveError]: uiRemoveError,
+    [types.uiStartLoading]: uiStartLoading,
+    [types.uiFinishLoading]: uiFinishLoading
 }
 
 export const uiReducer = (state = initialState, action) => {

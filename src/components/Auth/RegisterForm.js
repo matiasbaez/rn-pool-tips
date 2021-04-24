@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { Icon, Input, Button } from 'react-native-elements';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { size, isEmpty } from 'lodash';
 
 import validator from 'validator';
@@ -17,7 +17,8 @@ export default function RegisterForm(props) {
     const navigation = useNavigation();
 
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
+    const { loading } = useSelector(state => state.ui)
+
     const [showPassword, setShowPassword] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
     const [formData, setFormData] = useState(defaultFormData());
@@ -38,7 +39,6 @@ export default function RegisterForm(props) {
         } else if (size(password) < 6) {
             toastRef.current.show('La contraseña deben tener un minimo de 6 caracteres');
         } else {
-            setLoading(true);
             dispatch( startRegister(name, email, password) )
         }
     }
@@ -104,9 +104,10 @@ export default function RegisterForm(props) {
                 title="Registrarse"
                 containerStyle={styles.btnRegisterContainer}
                 buttonStyle={styles.btnRegister}
+                disabled={loading}
                 onPress={onSubmit} />
 
-            {/* <Loading isVisible={loading} text="Creando cuenta..." /> */}
+            <Loading isVisible={loading} text="Creando cuenta..." />
         </View>
     );
 }
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
         width: "95%",
     },
     btnRegister: {
-        backgroundColor: "#2b313f"
+        backgroundColor: "#00cdf7"
     },
     iconRight: {
         color: "#c1c1c1"

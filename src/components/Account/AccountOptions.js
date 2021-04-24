@@ -17,10 +17,10 @@ export default function AccountOptions(props) {
     
     const selectedComponent = (key) => {
         switch (key) {
-            case "displayName":
+            case "name":
                 setRenderComponent(
                     <ChangeDisplayNameForm
-                        displayName={userInfo.displayName}
+                        name={userInfo.name}
                         setShowModal={setShowModal}
                         toastRef={toastRef}
                         setReloadUserInfo={setReloadUserInfo} />
@@ -76,10 +76,10 @@ export default function AccountOptions(props) {
                 </ListItem>
             ))}
 
-            {/* {renderComponent && (
+            {renderComponent && (
                 <Modal isVisible={showModal} setIsVisible={setShowModal}
                     children={renderComponent } />
-            )} */}
+            )}
         </View>
     );
 }
@@ -93,7 +93,7 @@ function generateOptions(selectedComponent) {
             iconColorLeft: "#ccc",
             iconNameRight: "chevron-right",
             iconColorRight: "#ccc",
-            onPress: () => selectedComponent('displayName')
+            onPress: () => selectedComponent('name')
         },
         {
             title: "Cambiar email",

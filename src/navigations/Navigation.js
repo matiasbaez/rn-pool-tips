@@ -21,7 +21,7 @@ export default function Navigation() {
                     <Tab.Navigator
                         tabBarOptions={{
                             inactiveTintColor: '#646464',
-                            activeTintColor: '#2b313f'
+                            activeTintColor: '#00cdf7'
                         }}
                         screenOptions={({ route }) => ({
                             tabBarIcon: ({ color }) => screenOptions(route, color)

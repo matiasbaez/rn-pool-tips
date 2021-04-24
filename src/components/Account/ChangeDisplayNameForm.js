@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 
 export default function ChangeDisplayName(props) {
-    const { displayName, setShowModal, toastRef, setReloadUserInfo } = props;
+    const { name, setShowModal, toastRef, setReloadUserInfo } = props;
     const [newDisplayName, setNewDisplayName] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ export default function ChangeDisplayName(props) {
         setError(null);
         if (!newDisplayName) {
             setError("El nombre no puede estar vacio.");
-        } else if (displayName === newDisplayName) {
+        } else if (name === newDisplayName) {
             setError("El nombre no puede ser igual al actual.");
         } else {
             setIsLoading(true);
@@ -30,7 +30,7 @@ export default function ChangeDisplayName(props) {
                     name: "account-circle-outline",
                     color: "#c2c2c2",
                 }}
-                defaultValue={displayName || ""}
+                defaultValue={name || ""}
                 onChange={(e) => setNewDisplayName(e.nativeEvent.text)}
                 errorMessage={error}
             />
@@ -59,6 +59,6 @@ const styles = StyleSheet.create({
         width: "95%",
     },
     btn: {
-        backgroundColor: "#2b313f",
+        backgroundColor: "#00cdf7",
     },
 });

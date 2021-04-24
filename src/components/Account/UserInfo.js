@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 export default function UserInfo(props) {
 
     const {
-        userInfo: { uid, displayName, email, photoURL },
+        userInfo: { name, email, photoURL },
         setLoadingText,
         setLoading,
         toastRef
@@ -64,7 +64,7 @@ export default function UserInfo(props) {
                 </Avatar>
 
             <View>
-                <Text style={styles.displayName}>{displayName ? displayName : 'Anónimo'}</Text>
+                <Text style={styles.name}>{name ? name : 'Anónimo'}</Text>
                 <Text style={styles.email}>{email ? email : 'Social login' }</Text>
             </View>
         </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     userInfoAvatar: {
         marginRight: 20
     },
-    displayName: {
+    name: {
         fontWeight: "bold",
         paddingBottom: 5
     }

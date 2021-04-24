@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/core';
 import { StyleSheet, View, ScrollView, Text, Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { Divider } from 'react-native-elements';
-// import Toast from 'react-native-easy-toast';
+import Toast from 'react-native-easy-toast';
 
 import LoginForm from '../../components/Auth/LoginForm';
 
@@ -26,7 +26,7 @@ export default function Login() {
 
                 <Divider style={styles.divider} />
 
-                {/* <Toast ref={toastRef} position="center" opacity={0.9} /> */}
+                <Toast ref={toastRef} />
             </ScrollView>
         </KeyboardAwareScrollView>
     );
@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     btnRegister: {
-        color: "#2b313f",
+        color: "#00cdf7",
         fontWeight: "bold"
     },
     divider: {
-        backgroundColor: "#2b313f",
+        backgroundColor: "#00cdf7",
         margin: 40
     }
 });

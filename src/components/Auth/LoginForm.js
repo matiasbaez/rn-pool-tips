@@ -1,15 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { Input, Icon, Button } from 'react-native-elements';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 
 import Loading from '../Loading';
 
 import validator from 'validator';
 import { startLogin } from '../../actions/auth';
+import { finishLoading } from '../../actions/ui';
 
 export default function LoginForm(props) {
 
@@ -17,7 +18,8 @@ export default function LoginForm(props) {
     const navigation = useNavigation();
 
     const dispatch = useDispatch()
-    const [loading, setLoading] = useState(false);
+    const { loading } = useSelector(state => state.ui)
+
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState(defaultFormData());
     const { email, password } = formData;
@@ -29,7 +31,6 @@ export default function LoginForm(props) {
         } else if (!validator.isEmail(email)) {
             toastRef.current.show('El formato del email es incorrecto');
         } else {
-            // setLoading(true);
             dispatch( startLogin(email, password) )
         }
     }
@@ -70,10 +71,10 @@ export default function LoginForm(props) {
                 title="Iniciar Sesión"
                 containerStyle={styles.btnLoginContainer}
                 buttonStyle={styles.btnLogin}
+                disabled={loading}
                 onPress={onSubmit} />
-            
 
-            {/* <Loading isVisible={loading} text="Iniciando sesión..." /> */}
+            {loading && (<Loading isVisible={loading} text="Iniciando sesión..." />) }
         </View>
     );
 }
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
         width: "95%",
     },
     btnLogin: {
-        backgroundColor: "#2b313f"
+        backgroundColor: "#00cdf7"
     },
     iconRight: {
         color: "#c1c1c1"

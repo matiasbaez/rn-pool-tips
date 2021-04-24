@@ -6,4 +6,6 @@ export const types = {
     register: '@auth/register',
     uiSetError: '@ui/set-error',
     uiRemoveError: '@ui/remove-error',
+    uiStartLoading: '@ui/loading',
+    uiFinishLoading: '@ui/loaded'
 }

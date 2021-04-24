@@ -6,16 +6,21 @@ const initialState = {
     logged: false
 }
 
-const login = ({ payload }) => ({
-    access_token: payload.access_token,
-    user: payload.user,
-    logged: payload.logged
+const login = ({ state, payload }) => ({
+    ...state,
+    access_token: payload,
+    logged: true
 })
 
-const register = ({ payload }) => ({
-    access_token: payload.access_token,
-    user: payload.user,
-    logged: payload.logged
+const register = ({ state, payload }) => ({
+    ...state,
+    access_token: payload,
+    logged: true
+})
+
+const userInfo = ({ state, payload }) => ({
+    ...state,
+    user: payload
 })
 
 const logout = () => ({ logged: false })
@@ -23,6 +28,7 @@ const logout = () => ({ logged: false })
 const actionDicts = {
     [types.login]: login,
     [types.register]: register,
+    [types.user]: userInfo,
     [types.logout]: logout
 }
 
