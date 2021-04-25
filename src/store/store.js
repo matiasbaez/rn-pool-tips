@@ -3,6 +3,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk';
 import { loadState, saveState } from '../actions/localStorage';
 
+import { notificationReducer } from '../reducers/notificationReducer';
 import { authReducer } from '../reducers/authReducer'
 import { uiReducer } from '../reducers/uiReducer';
 
@@ -11,7 +12,8 @@ const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOO
 // Define multiple reducers
 const reducers = combineReducers({
     auth: authReducer,
-    ui: uiReducer
+    notification: notificationReducer,
+    ui: uiReducer,
 })
 
 const initialData = loadState()

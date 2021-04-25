@@ -7,5 +7,7 @@ export const types = {
     uiSetError: '@ui/set-error',
     uiRemoveError: '@ui/remove-error',
     uiStartLoading: '@ui/loading',
-    uiFinishLoading: '@ui/loaded'
+    uiFinishLoading: '@ui/loaded',
+    deviceState: '@onesignal/device-state',
+    notifReceived: '@onesignal/notification-received',
 }

@@ -19,7 +19,6 @@ export const startLogin = (email, password) => {
         const response = await fetch(request);
         const data = await response.json();
 
-        console.log('data: ', data);
         if (response.ok) {
             const { access_token, user } = data;
             dispatch( login(access_token, user) )

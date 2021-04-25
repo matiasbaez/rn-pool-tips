@@ -43,6 +43,7 @@ export default function LoginForm(props) {
     return (
         <View style={styles.formContainer}>
             <Input
+                value={email}
                 placeholder="Correo electronico"
                 containerStyle={styles.inputForm}
                 onChange={e => onChange(e, "email")}
@@ -57,6 +58,7 @@ export default function LoginForm(props) {
                 placeholder="Contraseña"
                 containerStyle={styles.inputForm}
                 password={true}
+                value={password}
                 secureTextEntry={!showPassword}
                 onChange={e => onChange(e, "password")}
                 rightIcon={
