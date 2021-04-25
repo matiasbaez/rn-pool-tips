@@ -31,7 +31,7 @@ export default function Navigation() {
                             options={{ title: 'Estado' }} />
 
                         <Tab.Screen name="info" component={TipsStack}
-                            options={{ title: 'Sugerencias' }} />
+                            options={{ title: 'Información' }} />
         
                         <Tab.Screen name="account" component={AccountStack}
                             options={{ title: 'Perfil' }} />
