@@ -1,5 +1,6 @@
 package com.matiasbaez.pooltips;
 
+import com.horcrux.svg.SvgPackage;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
