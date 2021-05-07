@@ -1,9 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { ActivityIndicator, FlatList, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import {
+    ActivityIndicator,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Badge } from 'react-native-elements';
-import { size } from 'lodash';
+import { Badge, Icon } from 'react-native-elements';
+import { map, size } from 'lodash';
+
+import Panel from '../../components/Panel';
 
 import { finishLoading, startLoading } from '../../actions/ui';
 import { settings } from '../../utils/api';
@@ -14,7 +25,14 @@ export default function Tips(props) {
 
     const { navigation, route } = props;
     const { category, name } = route.params;
+    const [ renderComponent, setRenderComponent ] = useState(null)
+    
+    const [ isVisible, setIsVisible ] = useState(false)
+    const [ date, setDate ] = useState(new Date());
+    const [ time, setTime ] = useState(new Date());
+    const [ mode, setMode ] = useState('date');
     const [ tips, setTips ] = useState([])
+
     const { loading } = useSelector(state => state.ui)
 
     useEffect(() => {
@@ -47,22 +65,65 @@ export default function Tips(props) {
         }, [])
     )
 
+    const showDatePicker = () => {
+        setMode('date')
+        setIsVisible(true)
+    }
+
+    const showTimePicker = () => {
+        setMode('time');
+        setIsVisible(true)
+    }
+
+    const onChangeDatepicker = (event, selectedDate) => {
+        const currentDate = selectedDate;
+
+        if (currentDate) {
+            if (mode == 'date') {
+                setDate(currentDate)
+                showTimePicker()
+            } else {
+                setTime(currentDate)
+                setIsVisible(false)
+            }
+        } else {
+            setIsVisible(false)
+        }
+    }
+
     return (
-        <View>
-            {size(tips) > 0 ? (
-                <FlatList
-                    data={tips}
-                    renderItem={(tip) => <Tip tip={tip} navigation={navigation} />}
-                    keyExtractor={(item, index) => index.toString()}
-                    onEndReachedThreshold={0.5}
-                    ListFooterComponent={<FooterList isLoading={loading} />} />
-            ) : (
-                <View style={styles.tipsLoader}>
-                    <ActivityIndicator color="#00cdf7" size="large" />
-                    <Text>Cargando recomendaciones</Text>
-                </View>
-            )}
-        </View>
+        <SafeAreaView>
+            <ScrollView>
+                {size(tips) > 0 ?
+                    map(tips, (tip, index) => (
+                        <Panel
+                            key={index}
+                            title={tip.title}
+                            description={tip.description}
+                            withReminder={tip.withReminder}
+                            setIsVisible={setIsVisible}
+                            showDatePicker={showDatePicker} />
+
+                    ))
+                : (
+                    <View style={styles.tipsLoader}>
+                        <ActivityIndicator color="#00cdf7" size="large" />
+                        <Text>Cargando recomendaciones</Text>
+                    </View>
+                )}
+
+                {isVisible && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display="default"
+                        timeZoneOffsetInMinutes={0}
+                        onChange={onChangeDatepicker} />
+                )}
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 
@@ -81,6 +142,7 @@ function Tip(props) {
 
                 <View>
                     <Text style={styles.tipTitle}>{title}</Text>
+                    <Icon type="material-community" />
                 </View>
             </View>
 
@@ -93,7 +155,7 @@ function FooterList(props) {
 
     if (isLoading) {
         return (
-            <View style={styles.recomendationLoader}>
+            <View style={styles.tipsLoader}>
                 <ActivityIndicator size="large" />
             </View>
         );
@@ -107,13 +169,13 @@ function FooterList(props) {
 }
 
 const styles = StyleSheet.create({
-    recomendationLoader: {
+    tipsLoader: {
         marginTop: 10,
         marginBottom: 10,
         alignItems: "center"
     },
     badgeStyle: {
-        backgroundColor: '#00cdf7',
+        backgroundColor: '#252d3d', // '#00cdf7'
         marginRight: 5
     },
     tipView: {

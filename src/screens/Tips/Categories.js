@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useFocusEffect } from '@react-navigation/native';
 import { View } from 'react-native';
 import { map } from 'lodash'
 
@@ -8,7 +9,6 @@ import Category from './Category';
 
 import { finishLoading, startLoading } from '../../actions/ui'
 import { settings } from '../../utils/api'
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function Categories(props) {
 
@@ -44,7 +44,7 @@ export default function Categories(props) {
     )
 
     return (
-        <View>
+        <View style={{ paddingHorizontal: 20 }}>
             {
                 map(categories, (category, index) => (
                     <Category key={index} category={category} navigation={navigation} />

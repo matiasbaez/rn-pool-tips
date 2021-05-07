@@ -73,6 +73,6 @@ const styles = StyleSheet.create({
         paddingBottom: 10
     },
     btnCloseSessionText: {
-        color: "#00cdf7"
+        color: '#252d3d', // '#00cdf7'
     }
 });

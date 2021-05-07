@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     btnRegister: {
-        color: "#00cdf7",
+        color: '#252d3d', // '#00cdf7'
         fontWeight: "bold"
     },
     divider: {
-        backgroundColor: "#00cdf7",
+        backgroundColor: '#252d3d', // '#00cdf7'
         margin: 40
     }
 });
