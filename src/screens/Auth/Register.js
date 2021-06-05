@@ -1,14 +1,25 @@
 
 import React, { useRef } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import Toast from 'react-native-easy-toast';
+
+import { useSelector } from 'react-redux';
 
 import RegisterForm from '../../components/Auth/RegisterForm';
 
 export default function Register() {
 
     const toastRef = useRef();
+
+    const navigation = useNavigation();
+    const { logged } = useSelector(state => state.auth)
+
+    if (logged) {
+        navigation.replace('home')
+        return;
+    }
 
     return (
         <KeyboardAwareScrollView>

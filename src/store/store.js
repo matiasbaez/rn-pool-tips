@@ -1,11 +1,12 @@
 
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk';
-import { loadState, saveState } from '../actions/localStorage';
 
 import { notificationReducer } from '../reducers/notificationReducer';
 import { authReducer } from '../reducers/authReducer'
 import { uiReducer } from '../reducers/uiReducer';
+
+import { loadState, saveState } from '../actions/localStorage';
 
 const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 

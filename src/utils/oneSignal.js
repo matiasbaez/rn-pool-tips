@@ -1,12 +1,15 @@
 
 import OneSignal from 'react-native-onesignal';
-
 import { deviceState } from '../actions/onesignal';
+
+import { finishLoading, startLoading } from '../actions/ui';
+
+const appID = 'da75f998-b004-48a9-81af-5b42a352c94b';
 
 export const oneSignalSetup = async (dispatch) => {
 
     /* O N E S I G N A L   S E T U P */
-    OneSignal.setAppId('da75f998-b004-48a9-81af-5b42a352c94b');
+    OneSignal.setAppId(appID);
     OneSignal.setLogLevel(6, 0);
     OneSignal.setRequiresUserPrivacyConsent(false);
     // OneSignal.promptForPushNotificationsWithUserResponse(response => {
@@ -54,5 +57,49 @@ export const oneSignalSetup = async (dispatch) => {
     const state = await OneSignal.getDeviceState();
     console.log('deviceState: ', state.isSubscribed);
 
-    // dispatch( deviceState(state.isSubscribed) )
+    dispatch( deviceState(state.isSubscribed) )
+}
+
+const sendNotification = (data) => {
+    return async (dispatch) => {
+        dispatch( startLoading() )
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify(data)
+        }
+
+        const request = new Request(`https://onesignal.com/api/v1/notifications`, options)
+        const response = await fetch(request);
+
+        if (response.ok) {
+
+        }
+
+        dispatch( finishLoading() )
+    }
+};
+
+export const pushNotification = async (dispatch, currentDate) => {
+    const deviceState = await OneSignal.getDeviceState();
+    currentDate.setMinutes(currentDate.getMinutes() + currentDate.getTimezoneOffset());
+
+    const message = {
+        app_id: appID,
+        contents: {
+            "es": "Tienes una tarea pendiente de realizar",
+            "en": "You have a pending task"
+        },
+        headings: {
+            "es": "Recordatorio",
+            "en": "Reminder"
+        },
+        include_player_ids: [deviceState.userId],
+        send_after: currentDate.toString()
+    };
+
+    dispatch( sendNotification(message) );
 }

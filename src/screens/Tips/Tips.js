@@ -16,6 +16,8 @@ import { map, size } from 'lodash';
 
 import Panel from '../../components/Panel';
 
+import { pushNotification } from '../../utils/oneSignal';
+
 import { finishLoading, startLoading } from '../../actions/ui';
 import { settings } from '../../utils/api';
 
@@ -23,13 +25,15 @@ export default function Tips(props) {
 
     const dispatch = useDispatch()
 
+    const currentDate = new Date();
+    currentDate.setMinutes(currentDate.getMinutes() - currentDate.getTimezoneOffset());
+
     const { navigation, route } = props;
     const { category, name } = route.params;
     const [ renderComponent, setRenderComponent ] = useState(null)
-    
+
     const [ isVisible, setIsVisible ] = useState(false)
-    const [ date, setDate ] = useState(new Date());
-    const [ time, setTime ] = useState(new Date());
+    const [ date, setDate ] = useState(currentDate);
     const [ mode, setMode ] = useState('date');
     const [ tips, setTips ] = useState([])
 
@@ -83,8 +87,9 @@ export default function Tips(props) {
                 setDate(currentDate)
                 showTimePicker()
             } else {
-                setTime(currentDate)
+                setDate(currentDate)
                 setIsVisible(false)
+                pushNotification(dispatch, currentDate)
             }
         } else {
             setIsVisible(false)

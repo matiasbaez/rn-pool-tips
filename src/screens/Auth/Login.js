@@ -6,10 +6,20 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import { Divider } from 'react-native-elements';
 import Toast from 'react-native-easy-toast';
 
+import { useSelector } from 'react-redux';
+
 import LoginForm from '../../components/Auth/LoginForm';
 
 export default function Login() {
     const toastRef = useRef();
+
+    const navigation = useNavigation();
+    const { logged } = useSelector(state => state.auth)
+
+    if (logged) {
+        navigation.replace('home')
+        return;
+    }
 
     return (
         <KeyboardAwareScrollView>

@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/core';
 import { Icon, Input, Button } from 'react-native-elements';
 import { useDispatch, useSelector } from 'react-redux';
 import { size, isEmpty } from 'lodash';
@@ -14,7 +13,6 @@ import { startRegister } from '../../actions/auth';
 export default function RegisterForm(props) {
 
     const { toastRef } = props;
-    const navigation = useNavigation();
 
     const dispatch = useDispatch();
     const { loading } = useSelector(state => state.ui)
