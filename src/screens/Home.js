@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Animated, Dimensions, Easing, Image, StyleSheet, Text, View } from 'react-native'
-import { Icon, Button } from 'react-native-elements'
-import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
-import { Picker } from '@react-native-picker/picker';
-import Wave from 'react-native-waveview';
 import { useFocusEffect } from '@react-navigation/native';
+import { Icon, Button } from 'react-native-elements'
+import { Picker } from '@react-native-picker/picker';
+import { useDispatch, useSelector } from 'react-redux';
+import Wave from 'react-native-waveview';
+
+import { finishLoading, startLoading } from '../actions/ui';
+import { settings } from '../utils/api';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -34,12 +37,16 @@ const phWheelColor = [
     '#5b3aad',
 ]
 
-const info = 'En general, un agua con un pH < 7 se considera ácido y con un pH > 7 se considera básica o alcalina. El rango normal de pH en agua superficial es de 6,5 a 8,5.'
+const info = 'En general, un agua con un pH < 7 se considera ácido y con un pH > 7 se considera básica o alcalina. El rango normal de pH en agua superficial es de 7,2 a 7,4.'
 
 export default function Home() {
 
+    const [infoBackground, setInfoBackground] = useState(parseInt(phWheelColor[Math.random() * 14]))
     const [selectedOptionText, setSelectedOptionText] = useState('Hoy');
     const [selectedOption, setSelectedOption] = useState('today');
+    const { access_token } = useSelector(state => state.auth)
+    const [poolStatus, setPoolStatus] = useState({})
+    const dispatch = useDispatch()
     const pickerRef = useRef()
 
     const [spinValue] = useState(new Animated.Value(0));
@@ -47,6 +54,32 @@ export default function Home() {
         inputRange: [0, 1],
         outputRange: ['0deg', '360deg']
     })
+
+    const getPoolStatus = async () => {
+        dispatch( startLoading() )
+
+        const options = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            }
+        }
+
+        const request = new Request(`${settings.host}/api/pool`, options)
+        const response = await fetch(request)
+        const json = await response.json()
+
+        if (response.ok) {
+            setPoolStatus(json.data[0]);
+            setTimeout(() => {
+                setInfoBackground(phWheelColor[parseInt(poolStatus.ph)])
+            }, 1000);
+        }
+
+        dispatch( finishLoading() )
+    }
 
     useFocusEffect(
         useCallback(() => {
@@ -59,6 +92,8 @@ export default function Home() {
                     useNativeDriver: true  // To make use of native driver for performance
                 }
             ).start()
+
+            getPoolStatus();
         }, [spin])
     )
 
@@ -103,13 +138,13 @@ export default function Home() {
                 <FadeInView style={styles.pHFadeContainer}>
                     <View style={styles.pHTextContainer}>
                         <Text style={styles.pHText}>pH</Text>
-                        <Text style={styles.pHValue}>14</Text>
+                        <Text style={styles.pHValue}>{poolStatus.ph}</Text>
                     </View>
                 </FadeInView>
             </View>
 
             <View style={styles.pHInfoContainer}>
-                <FadeInView duration={5000} style={styles.pHFadeInfoContainer}>
+                <FadeInView duration={5000} style={{...styles.pHFadeInfoContainer, backgroundColor: infoBackground}}>
                     <Icon style={styles.pHInfoIcon} type="material-community" name="menu-up" color="#f96d3a" />
                     <Text style={styles.pHInfoText}>{info}</Text>
                 </FadeInView>
@@ -127,7 +162,7 @@ export default function Home() {
                     animated={true}
                 />
                 <FadeInView style={styles.animatedView}>
-                    <Text style={styles.waveText}>Cloro: 30 ppm (mg/l)</Text>
+                    <Text style={styles.waveText}>Temperatura: {poolStatus.temperature}º C</Text>
                 </FadeInView>
             </View>
         </View>
@@ -202,12 +237,14 @@ const styles = StyleSheet.create({
         width: 60
     },
     pHText: {
+        color: 'black',
         fontSize: 30,
         fontWeight: 'bold',
         padding: 0,
         margin: 0
     },
     pHValue: {
+        color: 'black',
         fontSize: 25,
         textAlign: 'right',
         padding: 0,
@@ -219,7 +256,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     pHFadeInfoContainer: {
-        backgroundColor: phWheelColor[parseInt(Math.random() * 14)],
+        // backgroundColor: phWheelColor[parseInt(Math.random() * 14)],
         borderRadius: 20,
         paddingVertical: 20,
         paddingHorizontal: 15,
