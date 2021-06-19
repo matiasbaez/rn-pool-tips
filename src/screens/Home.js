@@ -67,7 +67,7 @@ export default function Home() {
             ).start()
 
             dispatch( getPoolStatus(access_token) );
-            
+            setInfoBackground(phWheelColor[parseInt(poolStatus.ph)])
         }, [spin])
     )
 

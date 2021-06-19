@@ -7,7 +7,7 @@ export default function Category(props) {
     
     const { navigation, category } = props;
     const { id, name, tips_count, image } = category;
-    const source = {uri: `${settings.host}/storage/category/${id}/${image}`};
+    const source = {uri: `${settings.host}/storage/category/${image}`};
 
     const getInfo = () => {
         navigation.navigate('info', { category: id, name });

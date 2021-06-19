@@ -10,6 +10,7 @@ export default function ChangeEmailForm(props) {
     const [formData, setFormData] = useState(defaultData());
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const auth = useSelector(state => state.auth);
     const [errors, setErrors] = useState({});
 
     const onSubmit = () => {
@@ -22,6 +23,10 @@ export default function ChangeEmailForm(props) {
             setErrors({ password: "La contraseña no puede estar vacia." });
         } else {
             setIsLoading(true);
+            dispatch( updateUser(auth, {email: formData.email}) )
+            toastRef.current.show('Email actualizado correctamente');
+            setShowModal(false);
+            setIsLoading(false);
         }
     };
 

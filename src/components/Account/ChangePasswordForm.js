@@ -6,11 +6,13 @@ import { size } from 'lodash';
 
 export default function ChangePasswordForm(props) {
     const { setShowModal, toastRef } = props;
-    const [formData, setFormData] = useState(defaultData());
+
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    const [formData, setFormData] = useState(defaultData());
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const auth = useSelector(state => state.auth);
     const [errors, setErrors] = useState({});
 
     const onSubmit = () => {
@@ -34,6 +36,11 @@ export default function ChangePasswordForm(props) {
             });
         } else {
             setIsLoading(true);
+            const data = {password: formData.newPassword, password_confirmation: formData.repeatNewPassword};
+            dispatch( updateUser(auth, data) )
+            toastRef.current.show('Contraseña actualizada correctamente')
+            setShowModal(false);
+            setIsLoading(false);
         }
     };
 

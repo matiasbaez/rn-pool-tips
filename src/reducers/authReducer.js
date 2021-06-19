@@ -23,13 +23,19 @@ const userInfo = ({ state, payload }) => ({
     user: payload
 })
 
+const refreshToken = ({ state, payload }) => ({
+    ...state,
+    access_token: payload,
+})
+
 const logout = () => ({ logged: false })
 
 const actionDicts = {
     [types.login]: login,
     [types.register]: register,
     [types.user]: userInfo,
-    [types.logout]: logout
+    [types.logout]: logout,
+    [types.refreshToken]: refreshToken,
 }
 
 export const authReducer = (state = initialState, action) => {

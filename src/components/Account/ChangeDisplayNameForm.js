@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Input, Button } from 'react-native-elements';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser } from '../../actions/auth';
 
 export default function ChangeDisplayName(props) {
     const { name, setShowModal, toastRef, setReloadUserInfo } = props;
     const [newDisplayName, setNewDisplayName] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const auth = useSelector(state => state.auth);
     const [error, setError] = useState(null);
+    const dispatch = useDispatch();
 
     const onSubmit = () => {
         setError(null);
@@ -16,7 +20,10 @@ export default function ChangeDisplayName(props) {
             setError("El nombre no puede ser igual al actual.");
         } else {
             setIsLoading(true);
-
+            dispatch( updateUser(auth, {name: newDisplayName}) )
+            toastRef.current.show('Nombre actualizado correctamente')
+            setShowModal(false);
+            setIsLoading(false);
         }
     };
 

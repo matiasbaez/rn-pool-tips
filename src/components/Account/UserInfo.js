@@ -2,18 +2,29 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Avatar } from 'react-native-elements';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
+import { startUploadImage } from '../../actions/auth';
+import { settings } from '../../utils/api';
+
 export default function UserInfo(props) {
 
     const {
-        userInfo: { name, email, photoURL },
+        userInfo: { id, name, email, image },
         setLoadingText,
         setLoading,
         toastRef
     } = props;
+
+    const auth = useSelector(state => state.auth)
+    const dispatch = useDispatch()
+
+    const getProfilePicture = () => {
+        return `${settings.host}/storage/user/${id}/${image}`;
+    }
 
     const changeAvatar = async () => {
         const { status } = await Camera.requestPermissionsAsync();
@@ -30,13 +41,13 @@ export default function UserInfo(props) {
                 toastRef.current.show('No se ha seleccionado ninguna imagen');
             } else {
                 uploadImage(result.uri)
-                .then(() => {
-                    toastRef.current.show('Imagen subida correctamente');
-                })
-                .catch(() => {
-                    setLoading(false);
-                    toastRef.current.show('Error al actualizar la imagen');
-                });
+                // .then(() => {
+                //     toastRef.current.show('Imagen subida correctamente');
+                // })
+                // .catch(() => {
+                //     setLoading(false);
+                //     toastRef.current.show('Error al actualizar la imagen');
+                // });
             }
         }
     }
@@ -49,6 +60,10 @@ export default function UserInfo(props) {
         const blob = await response.blob();
 
         // UPLOAD
+        dispatch( startUploadImage(auth, blob) )
+
+        // setLoadingText("");
+        setLoading(false);
     }
 
     return (
@@ -58,7 +73,7 @@ export default function UserInfo(props) {
                 size="large"
                 showEditButton
                 containerStyle={styles.userInfoAvatar}
-                source={photoURL ? {uri: photoURL} : require("../../../assets/images/default-avatar.jpg")} >
+                source={image ? {uri: getProfilePicture()} : require("../../../assets/images/default-avatar.jpg")} >
                     <Avatar.Accessory size={22} onPress={changeAvatar} />
                 </Avatar>
 
