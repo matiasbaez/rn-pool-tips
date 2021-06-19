@@ -6,8 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useDispatch, useSelector } from 'react-redux';
 import Wave from 'react-native-waveview';
 
-import { finishLoading, startLoading } from '../actions/ui';
-import { settings } from '../utils/api';
+import { getPoolStatus } from '../actions/pool';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -41,45 +40,19 @@ const info = 'En general, un agua con un pH < 7 se considera ácido y con un pH 
 
 export default function Home() {
 
-    const [infoBackground, setInfoBackground] = useState(parseInt(phWheelColor[Math.random() * 14]))
     const [selectedOptionText, setSelectedOptionText] = useState('Hoy');
     const [selectedOption, setSelectedOption] = useState('today');
-    const { access_token } = useSelector(state => state.auth)
-    const [poolStatus, setPoolStatus] = useState({})
+    const {access_token} = useSelector(state => state.auth)
+    const poolStatus = useSelector(state => state.pool)
     const dispatch = useDispatch()
-    const pickerRef = useRef()
-
+    
+    const [infoBackground, setInfoBackground] = useState(phWheelColor[parseInt(poolStatus.ph)])
     const [spinValue] = useState(new Animated.Value(0));
     const spin = spinValue.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '360deg']
     })
 
-    const getPoolStatus = async () => {
-        dispatch( startLoading() )
-
-        const options = {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${access_token}`
-            }
-        }
-
-        const request = new Request(`${settings.host}/api/pool`, options)
-        const response = await fetch(request)
-        const json = await response.json()
-
-        if (response.ok) {
-            setPoolStatus(json.data[0]);
-            setTimeout(() => {
-                setInfoBackground(phWheelColor[parseInt(poolStatus.ph)])
-            }, 1000);
-        }
-
-        dispatch( finishLoading() )
-    }
 
     useFocusEffect(
         useCallback(() => {
@@ -93,7 +66,8 @@ export default function Home() {
                 }
             ).start()
 
-            getPoolStatus();
+            dispatch( getPoolStatus(access_token) );
+            
         }, [spin])
     )
 
