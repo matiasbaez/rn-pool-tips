@@ -1,4 +1,4 @@
 
 export const settings = {
-    host: 'http://pooltips.ecommercesy.com',
+    host: 'http://api.piscinaelectronica.com',
 }

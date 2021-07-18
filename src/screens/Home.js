@@ -1,21 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Animated, Dimensions, Easing, Image, StyleSheet, Text, View } from 'react-native'
+import { Animated, Dimensions, Easing, Image, StyleSheet, Text, View, processColor } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon, Button } from 'react-native-elements'
 import { Picker } from '@react-native-picker/picker';
 import { useDispatch, useSelector } from 'react-redux';
 import Wave from 'react-native-waveview';
 
-import { getPoolStatus } from '../actions/pool';
+import { filterPoolStatus, getPoolStatus } from '../actions/pool';
+
+import StackedBarChartScreen from '../components/Charts/StackedBar';
+import BarChartScreen from '../components/Charts/Bar';
 
 const windowWidth = Dimensions.get('window').width;
 
 const pickerOptions = {
-    today       : 'Hoy',
-    yesterday   : 'Ayer',
+    day       : 'Hoy',
+    // yesterday   : 'Ayer',
     week        : 'Esta semana',
-    lastMonth   : 'Ultimo mes',
-    custom      : 'Personalizada',
+    month        : 'Ultimo mes',
+    // lastMonth   : 'Ultimo mes',
+    // custom      : 'Personalizada',
 }
 
 const phWheelColor = [
@@ -41,18 +45,19 @@ const info = 'En general, un agua con un pH < 7 se considera ácido y con un pH 
 export default function Home() {
 
     const [selectedOptionText, setSelectedOptionText] = useState('Hoy');
-    const [selectedOption, setSelectedOption] = useState('today');
+    const [selectedOption, setSelectedOption] = useState('day');
     const {access_token} = useSelector(state => state.auth)
     const poolStatus = useSelector(state => state.pool)
     const dispatch = useDispatch()
     
     const [infoBackground, setInfoBackground] = useState(phWheelColor[parseInt(poolStatus.ph)])
+    const [stackedBarCharData, setStackedBarData] = useState([]);
+    const [barCharData, setBarData] = useState([]);
     const [spinValue] = useState(new Animated.Value(0));
     const spin = spinValue.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '360deg']
     })
-
 
     useFocusEffect(
         useCallback(() => {
@@ -66,22 +71,48 @@ export default function Home() {
                 }
             ).start()
 
-            dispatch( getPoolStatus(access_token) );
-            setInfoBackground(phWheelColor[parseInt(poolStatus.ph)])
-        }, [spin])
+            switch (selectedOption) {
+                case 'day':
+                    dispatch( getPoolStatus(access_token) );
+                    setInfoBackground(phWheelColor[parseInt(poolStatus.ph)])
+                    break;
+
+                case 'week':
+                case 'month':
+                    updateCharts(selectedOption)
+                    break;
+
+                default:
+                    dispatch( getPoolStatus(access_token) );
+                    setInfoBackground(phWheelColor[parseInt(poolStatus.ph)])
+                    break;
+            }
+        }, [])
     )
 
     const changePicker = (itemValue, itemIndex) => {
         setSelectedOption(itemValue)
         setSelectedOptionText(pickerOptions[itemValue])
+        updateCharts(itemValue)
     }
 
     const showDropdown = () => {
         
     }
 
+    const updateCharts = (itemValue) => {
+        const callback = (response) => {
+            if (response.success) {
+                if (itemValue == 'week') setStackedBarData(updateStackedBarChart(response.data))
+                if (itemValue == 'month') setBarData(updateBarChart(response.data))
+            }
+        }
+
+        dispatch( filterPoolStatus(itemValue, callback) )
+    }
+
     return (
-        <View>
+        <>
             <View style={styles.pickerContainer}>
                 <View onPress={showDropdown} style={styles.pickerText}>
                     <Text>{selectedOptionText}: Estado de la piscina</Text> 
@@ -96,51 +127,101 @@ export default function Home() {
                     itemStyle={styles.picker}
                     selectedValue={selectedOption}
                     onValueChange={changePicker}>
-                    <Picker.Item label="Hoy" value="today" />
-                    <Picker.Item label="Ayer" value="yesterday" />
+                    <Picker.Item label="Hoy" value="day" />
                     <Picker.Item label="Esta semana" value="week" />
-                    <Picker.Item label="Ultimo mes" value="lastMonth" />
-                    <Picker.Item label="Personalizada" value="custom" />
+                    <Picker.Item label="Ultimo mes" value="month" />
                 </Picker>
             </View>
 
-            <View style={styles.pHContainer}>
-                <Animated.Image
-                    style={{...styles.pHImage, transform: [{rotate: spin}] }}
-                    source={require('../../assets/images/ph-wheel.png')} />
+            { selectedOption == 'day' && <>
+                <View style={styles.pHContainer}>
+                    <Animated.Image
+                        style={{...styles.pHImage, transform: [{rotate: spin}] }}
+                        source={require('../../assets/images/ph-wheel.png')} />
 
-                <FadeInView style={styles.pHFadeContainer}>
-                    <View style={styles.pHTextContainer}>
-                        <Text style={styles.pHText}>pH</Text>
-                        <Text style={styles.pHValue}>{poolStatus.ph}</Text>
-                    </View>
-                </FadeInView>
-            </View>
+                    <FadeInView style={styles.pHFadeContainer}>
+                        <View style={styles.pHTextContainer}>
+                            <Text style={styles.pHText}>pH</Text>
+                            <Text style={styles.pHValue}>{poolStatus.ph}</Text>
+                        </View>
+                    </FadeInView>
+                </View>
 
-            <View style={styles.pHInfoContainer}>
-                <FadeInView duration={5000} style={{...styles.pHFadeInfoContainer, backgroundColor: infoBackground}}>
-                    <Icon style={styles.pHInfoIcon} type="material-community" name="menu-up" color="#f96d3a" />
-                    <Text style={styles.pHInfoText}>{info}</Text>
-                </FadeInView>
-            </View>
+                <View style={styles.pHInfoContainer}>
+                    <FadeInView duration={5000} style={{...styles.pHFadeInfoContainer, backgroundColor: infoBackground}}>
+                        <Icon style={styles.pHInfoIcon} type="material-community" name="menu-up" color="#f96d3a" />
+                        <Text style={styles.pHInfoText}>{info}</Text>
+                    </FadeInView>
+                </View>
 
-            <View style={styles.waveContainer}>
-                <Wave
-                    style={styles.wave}
-                    H={100}
-                    waveParams={[
-                        {A: 20, T: windowWidth * 5, fill: '#62c2ff'},
-                        {A: 15, T: windowWidth * 5, fill: '#0087dc'},
-                        {A: 10, T: windowWidth * 5, fill: '#1aa7ff'},
-                    ]}
-                    animated={true}
-                />
-                <FadeInView style={styles.animatedView}>
-                    <Text style={styles.waveText}>Temperatura: {poolStatus.temperature}º C</Text>
-                </FadeInView>
-            </View>
-        </View>
+                <View style={styles.waveContainer}>
+                    <Wave
+                        style={styles.wave}
+                        H={100}
+                        waveParams={[
+                            {A: 20, T: windowWidth * 5, fill: '#62c2ff'},
+                            {A: 15, T: windowWidth * 5, fill: '#0087dc'},
+                            {A: 10, T: windowWidth * 5, fill: '#1aa7ff'},
+                        ]}
+                        animated={true}
+                    />
+                    <FadeInView style={styles.animatedView}>
+                        <Text style={styles.waveText}>Temperatura: {poolStatus.temperature}º C</Text>
+                    </FadeInView>
+                </View>
+            </> }
+
+            { (selectedOption == 'week' && stackedBarCharData.length > 0) && <StackedBarChartScreen data={stackedBarCharData} /> }
+            { (selectedOption == 'month' && barCharData.length > 0) && <StackedBarChartScreen data={barCharData} config={{
+                barWidth: 0.2,
+                group: {
+                    fromX: 0,
+                    groupSpace: 1,
+                    barSpace: 1,
+                },
+            }} /> }
+        </>
     )
+}
+
+const updateBarChart = (poolStatus) => {
+    const data = [];
+    if (poolStatus && poolStatus.values) {
+        for (let i = 0; i < poolStatus.values.length; i++) {
+            let values = [];
+            if (poolStatus.values[i] && poolStatus.values[i].data) poolStatus.values[i].data.map(val => values.push(parseFloat(val)))
+            data.push({
+                values,
+                label: poolStatus.values[i].label,
+                config: {
+                    drawValues: false,
+                    colors: [processColor(phWheelColor[parseInt(Math.random() * 14)])],
+                }
+            })
+        }
+
+        return data;
+    } else return [];
+}
+
+const updateStackedBarChart = (poolStatus) => {
+    const data = [];
+    if (poolStatus && poolStatus.labels) {
+        for (let i = 0; i < poolStatus.labels.length; i++) {
+            let values = [];
+            if (poolStatus.values[i] && poolStatus.values[i].data) poolStatus.values[i].data.map(val => values.push(parseFloat(val)))
+            data.push({
+                values,
+                label: poolStatus.labels[i],
+                config: {
+                  drawValues: false,
+                  colors: [processColor(phWheelColor[parseInt(Math.random() * 14)])],
+                }
+            })
+        }
+
+        return data;
+    } else return [];
 }
 
 const FadeInView = (props) => {
